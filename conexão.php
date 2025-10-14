@@ -13,4 +13,4 @@ if($link === false){
 mysqli_set_charset($link, "utf8mb4");
 
 
-?> kkk
+?> 
