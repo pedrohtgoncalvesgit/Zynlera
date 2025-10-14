@@ -7,5 +7,7 @@ define('DB_NAME', 'sistema_escolar'); // Nome do banco de dados conforme seu scr
 
 // URLs Base (ajuste conforme a sua estrutura de projeto)
 define('BASE_URL', 'http://localhost//');
+
+//ola mundo
 ?>
 
