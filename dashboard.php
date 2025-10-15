@@ -15,47 +15,237 @@ $nome = $_SESSION["nome_completo"];
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sistema Escolar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font: 14px sans-serif; text-align: center; }
-        .menu { margin-top: 20px; }
-        .menu a { margin: 0 10px; text-decoration: none; padding: 10px; border: 1px solid #ccc; display: inline-block; }
+        /* --- Estilos Gerais --- */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f4f7fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Cabeçalho Superior --- */
+        .main-header {
+            background: linear-gradient(90deg, #0056b3, #007bff);
+            color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info i {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        .user-info a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+
+        .user-info a:hover {
+            opacity: 1;
+        }
+        
+        /* --- Conteúdo Principal --- */
+        .container {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 20px auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .dashboard-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: left;
+        }
+
+        .welcome-box {
+            background-color: #e7f5ff;
+            border-left: 5px solid #007bff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .welcome-box h1 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #0056b3;
+        }
+        
+        .dashboard-card h2 {
+            font-size: 1.5em;
+            margin-top: 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .dashboard-card p {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        /* --- Menu de Funcionalidades --- */
+        .menu-section h3 {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-button {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            font-size: 1.1em;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .menu-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .menu-button i {
+            font-size: 1.5em;
+            margin-right: 15px;
+            width: 30px;
+            text-align: center;
+        }
+        
+        /* Cores dos Botões */
+        .btn-green { background-color: #28a745; }
+        .btn-orange { background-color: #fd7e14; }
+        .btn-purple { background-color: #6f42c1; }
+        .btn-blue { background-color: #17a2b8; }
+        .btn-red { background-color: #dc3545; }
+        .btn-dark-blue { background-color: #007bff; }
+        .btn-yellow { background-color: #ffc107; }
+
+        /* --- Link de Logout --- */
+        .logout-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .logout-button {
+            display: inline-block;
+            background-color: #6c757d;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .logout-button:hover {
+            background-color: #5a6268;
+        }
+
     </style>
 </head>
 <body>
-    <h1>Bem-vindo, <?php echo htmlspecialchars($nome); ?>!</h1>
-    <h2>Dashboard de <?php echo htmlspecialchars($papel); ?></h2>
-    <p>Este é o ponto de acesso inicial. Suas funcionalidades específicas de <?php echo htmlspecialchars($papel); ?> estarão listadas abaixo.</p>
 
-    <div class="menu">
-        <?php 
-        if (is_role('Administrador')) {
-            // Requisitos Administrador [cite: 34] - Acesso total ao sistema. [cite: 13]
-            echo '<h3>Funcionalidades de Administrador:</h3>';
-            echo '<a href="admin/gerenciar_alunos.php">Gerenciar Alunos</a>'; // Cadastro e Gerenciamento de Alunos 
-            echo '<a href="admin/gerenciar_professores.php">Gerenciar Professores</a>'; // Cadastro e Gerenciamento de Professores [cite: 40]
-            echo '<a href="admin/gerenciar_turmas.php">Gerenciar Turmas e Disciplinas</a>'; // Gerenciamento de Turmas e Disciplinas [cite: 45]
-            echo '<a href="admin/corrigir_notas.php">Corrigir Notas/Faltas</a>'; // Controle de Notas e Faltas [cite: 51]
-            echo '<a href="relatorios.php">Visualizar Dashboards/Relatórios</a>'; // Dashboard [cite: 16, 17]
-        } elseif (is_role('Professor')) {
-            // Requisitos Professor [cite: 20] - Acesso restrito às turmas e disciplinas vinculadas. [cite: 14]
-            echo '<h3>Funcionalidades de Professor:</h3>';
-            echo '<a href="admin/visualizar_turmas.php">Visualizar Turmas Vinculadas</a>'; // Visualizar todas as turmas em que atuam. [cite: 22]
-            echo '<a href="admin/gerenciar_turmas.php">Gerenciar Disciplinas</a>'; // Criar, editar e excluir disciplinas. [cite: 23]
-            echo '<a href="admin/lancar_notas_faltas.php">Lançar e Controlar Notas/Faltas</a>'; // Lançamento e Controle de Notas e Faltas [cite: 27]
-            echo '<a href="relatorios.php?nivel=professor">Gerar Relatórios</a>'; // Relatórios devem estar disponíveis por turma, disciplina e aluno. [cite: 33]
-        } elseif (is_role('Aluno')) {
-            // Requisitos Aluno [cite: 54] - Acesso apenas às suas próprias informações acadêmicas. [cite: 15]
-            echo '<h3>Funcionalidades de Aluno:</h3>';
-            echo '<a href="aluno/visualizar_informacoes.php">Consultar Notas e Faltas</a>'; // Visualização de Notas e Faltas [cite: 55]
-            echo '<a href="aluno/solicitar_alteracao.php">Solicitar Alteração de Dados</a>'; // Alteração de Dados Pessoais [cite: 59]
-        } else {
-            echo '<p>Seu nível de acesso não está configurado corretamente. Contate o administrador.</p>';
-        }
-        ?>
-    </div>
-    
-    <hr>
-    <p><a href="logout.php">Sair (Logout)</a></p>
+    <header class="main-header">
+        <div class="logo">Zynlera</div>
+        <div class="user-info">
+            <i class="fa-solid fa-user-circle"></i>
+            <span><?php echo htmlspecialchars($nome); ?> (<?php echo htmlspecialchars($papel); ?>)</span>
+            <a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="dashboard-card">
+            <div class="welcome-box">
+                <h1>Bem-vindo, <?php echo htmlspecialchars($nome); ?>!</h1>
+            </div>
+
+            <h2>Dashboard de <?php echo htmlspecialchars($papel); ?></h2>
+            <p>Este é o ponto de acesso inicial. Suas funcionalidades específicas de <?php echo htmlspecialchars($papel); ?> estarão listadas abaixo.</p>
+
+            <section class="menu-section">
+                <?php 
+                if (is_role('Administrador')) {
+                    echo '<h3>Funcionalidades de Administrador:</h3>';
+                    echo '<div class="menu-grid">';
+                    echo '<a href="admin/gerenciar_alunos.php" class="menu-button btn-dark-blue"><i class="fa-solid fa-users"></i> Gerenciar Alunos</a>';
+                    echo '<a href="admin/gerenciar_professores.php" class="menu-button btn-purple"><i class="fa-solid fa-chalkboard-user"></i> Gerenciar Professores</a>';
+                    echo '<a href="admin/gerenciar_turmas.php" class="menu-button btn-orange"><i class="fa-solid fa-book-open"></i> Gerenciar Turmas e Disciplinas</a>';
+                    echo '<a href="admin/corrigir_notas.php" class="menu-button btn-red"><i class="fa-solid fa-marker"></i> Corrigir Notas/Faltas</a>';
+                    echo '<a href="relatorios.php" class="menu-button btn-blue"><i class="fa-solid fa-chart-line"></i> Visualizar Relatórios</a>';
+                    echo '</div>';
+                } elseif (is_role('Professor')) {
+                    echo '<h3>Funcionalidades de Professor:</h3>';
+                    echo '<div class="menu-grid">';
+                    echo '<a href="admin/visualizar_turmas.php" class="menu-button btn-green"><i class="fa-solid fa-school"></i> Visualizar Turmas Vinculadas</a>';
+                    echo '<a href="admin/gerenciar_turmas.php" class="menu-button btn-orange"><i class="fa-solid fa-book"></i> Gerenciar Disciplinas</a>';
+                    echo '<a href="admin/lancar_notas_faltas.php" class="menu-button btn-purple"><i class="fa-solid fa-clipboard-check"></i> Lançar Notas/Faltas</a>';
+                    echo '<a href="relatorios.php?nivel=professor" class="menu-button btn-blue"><i class="fa-solid fa-file-invoice"></i> Gerar Relatórios</a>';
+                    echo '</div>';
+                } elseif (is_role('Aluno')) {
+                    echo '<h3>Funcionalidades de Aluno:</h3>';
+                    echo '<div class="menu-grid">';
+                    echo '<a href="aluno/visualizar_informacoes.php" class="menu-button btn-dark-blue"><i class="fa-solid fa-graduation-cap"></i> Consultar Notas e Faltas</a>';
+                    echo '<a href="aluno/solicitar_alteracao.php" class="menu-button btn-yellow"><i class="fa-solid fa-user-pen"></i> Solicitar Alteração de Dados</a>';
+                    echo '</div>';
+                } else {
+                    echo '<p>Seu nível de acesso não está configurado corretamente. Contate o administrador.</p>';
+                }
+                ?>
+            </section>
+            
+            <section class="logout-section">
+                <a href="logout.php" class="logout-button">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair do Sistema
+                </a>
+            </section>
+        </div>
+    </main>
+
 </body>
 </html>
