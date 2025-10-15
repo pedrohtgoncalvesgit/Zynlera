@@ -90,58 +90,260 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastrar Aluno - Administrador</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font: 14px sans-serif; }
-        .wrapper { width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-control { width: 100%; padding: 8px; box-sizing: border-box; }
-        .btn { padding: 10px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; }
-        .alert { color: red; font-size: 0.9em; }
+        /* --- Estilos Gerais --- */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f4f7fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Cabeçalho Superior (simulando menu_admin.php) --- */
+        .main-header {
+            background: linear-gradient(90deg, #0056b3, #007bff);
+            color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+        
+        .main-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+
+        .main-nav a:hover {
+            opacity: 1;
+        }
+
+        /* --- Conteúdo Principal --- */
+        .container {
+            flex: 1;
+            padding: 30px;
+            max-width: 700px; /* Largura ajustada para formulário */
+            margin: 20px auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .content-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: left;
+        }
+
+        .content-card h2 {
+            font-size: 1.8em;
+            color: #0056b3;
+            margin-top: 0;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .content-card h2 i {
+            margin-right: 15px;
+            color: #007bff;
+        }
+
+        .content-card p {
+            font-size: 1.0em;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* --- Formulário --- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            font-size: 1.05em;
+        }
+
+        .form-control {
+            width: calc(100% - 24px); /* Ajuste para padding */
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        /* Estilo para inputs do tipo date */
+        input[type="date"].form-control {
+            /* Adiciona um pouco mais de espaço para o ícone do navegador */
+            padding-right: 15px; 
+        }
+
+        /* --- Botões de Ação --- */
+        .form-actions {
+            display: flex;
+            justify-content: flex-start; /* Alinha à esquerda */
+            gap: 15px; /* Espaçamento entre botões */
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.05em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            border: none; /* Remover borda padrão de button */
+            display: inline-flex; /* Para ícones */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background-color: #007bff; /* Azul para Cadastrar */
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d; /* Cinza para Cancelar */
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+        }
+
+        /* --- Mensagens de Erro/Alerta --- */
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+        }
+        .alert-error i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .error-message {
+            color: #dc3545; /* Vermelho para erros de campo */
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <div class="wrapper">
-        <?php include 'menu_admin.php'; ?>
-        <h2>Cadastrar Novo Aluno</h2>
-<p>Preencha os dados do novo aluno (Dados obrigatórios: nome completo, data de nascimento, matrícula)</p>
 
-        <?php if (!empty($erro_geral)) { echo '<div class="alert">Erro: ' . $erro_geral . '</div>'; } ?>
+    <header class="main-header">
+        <div class="logo">Zynlera</div>
+        <nav class="main-nav">
+            <a href="../dashboard.php"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <a href="gerenciar_alunos.php"><i class="fa-solid fa-users"></i> Alunos</a>
+            <a href="gerenciar_professores.php"><i class="fa-solid fa-chalkboard-user"></i> Professores</a>
+            <a href="../logout.php"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
+        </nav>
+    </header>
 
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <div class="form-group">
-                <label>Nome Completo</label>
-                <input type="text" name="nome_completo" class="form-control" value="<?php echo htmlspecialchars($nome_completo); ?>">
-                <span class="alert"><?php echo $nome_completo_err; ?></span>
-            </div>
-            <div class="form-group">
-                <label>Email (Login)</label>
-                <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($email); ?>">
-                <span class="alert"><?php echo $email_err; ?></span>
-            </div>
-            <div class="form-group">
-                <label>Senha Provisória (Login)</label>
-                <input type="text" name="senha" class="form-control" value="<?php echo htmlspecialchars($senha); ?>">
-                <span class="alert"><?php echo $senha_err; ?></span>
-            </div>
-            
-            <div class="form-group">
-                <label>Matrícula</label>
-                <input type="text" name="matricula" class="form-control" value="<?php echo htmlspecialchars($matricula); ?>">
-                <span class="alert"><?php echo $matricula_err; ?></span>
-            </div>
-            <div class="form-group">
-                <label>Data de Nascimento</label>
-                <input type="date" name="data_nascimento" class="form-control" value="<?php echo htmlspecialchars($data_nascimento); ?>">
-                <span class="alert"><?php echo $data_nascimento_err; ?></span>
-            </div>
-            
-            <div class="form-group">
-                <input type="submit" class="btn" value="Cadastrar Aluno">
-                <a href="gerenciar_alunos.php" class="btn" style="background-color: #6c757d;">Cancelar</a>
-            </div>
-        </form>
-    </div>
+    <main class="container">
+        <div class="content-card">
+            <h2><i class="fa-solid fa-user-plus"></i> Cadastrar Novo Aluno</h2>
+            <p>Preencha os dados do novo aluno (Dados obrigatórios: nome completo, data de nascimento, matrícula)</p>
+
+            <?php if (!empty($erro_geral)): ?>
+                <div class="alert-error"><i class="fa-solid fa-circle-exclamation"></i> <?php echo $erro_geral; ?></div>
+            <?php endif; ?>
+
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <div class="form-group">
+                    <label for="nome_completo">Nome Completo</label>
+                    <input type="text" name="nome_completo" id="nome_completo" class="form-control" value="<?php echo htmlspecialchars($nome_completo); ?>" required>
+                    <span class="error-message"><?php echo $nome_completo_err; ?></span>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email (Login)</label>
+                    <input type="email" name="email" id="email" class="form-control" value="<?php echo htmlspecialchars($email); ?>" required>
+                    <span class="error-message"><?php echo $email_err; ?></span>
+                </div>
+                <div class="form-group">
+                    <label for="senha">Senha Provisória (Login)</label>
+                    <input type="text" name="senha" id="senha" class="form-control" value="<?php echo htmlspecialchars($senha); ?>" required>
+                    <span class="error-message"><?php echo $senha_err; ?></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="matricula">Matrícula</label>
+                    <input type="text" name="matricula" id="matricula" class="form-control" value="<?php echo htmlspecialchars($matricula); ?>" required>
+                    <span class="error-message"><?php echo $matricula_err; ?></span>
+                </div>
+                <div class="form-group">
+                    <label for="data_nascimento">Data de Nascimento</label>
+                    <input type="date" name="data_nascimento" id="data_nascimento" class="form-control" value="<?php echo htmlspecialchars($data_nascimento); ?>" required>
+                    <span class="error-message"><?php echo $data_nascimento_err; ?></span>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> Cadastrar Aluno</button>
+                    <a href="gerenciar_alunos.php" class="btn btn-secondary"><i class="fa-solid fa-xmark"></i> Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
 </body>
 </html>
+
+<?php
+mysqli_close($link);
+?>
