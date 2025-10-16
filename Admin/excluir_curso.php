@@ -1,5 +1,5 @@
 <?php
-require_once 'restrição_acesso.php';
+require_once 'restricao_acesso.php';
 require_once '../conexão.php';
 
 if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {

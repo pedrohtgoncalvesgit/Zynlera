@@ -1,6 +1,7 @@
 <?php
+header('Content-Type: text/html; charset=utf-8');
 // gerenciar_turmas.php
-require_once 'restrição_acesso.php';
+require_once 'restricao_acesso.php';
 require_once '../conexão.php';
 
 // Consulta para buscar todas as turmas (juntando com o nome do curso)
@@ -16,6 +17,7 @@ $result = mysqli_query($link, $sql);
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciamento de Turmas</title>
     <style>
         body { font-family: Arial, sans-serif; }
@@ -34,7 +36,7 @@ $result = mysqli_query($link, $sql);
     <div class="wrapper">
         <h2>Gerenciamento de Turmas</h2>
         
-        <a href="" class="btn-add">Adicionar Nova Turma</a>
+        <a href="cadastrar_turma.php" class="btn-add">Adicionar Nova Turma</a>
         
         <?php if (mysqli_num_rows($result) > 0): ?>
         <table>

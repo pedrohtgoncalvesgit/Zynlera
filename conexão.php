@@ -12,4 +12,7 @@ if($link === false){
 // Configura o charset para evitar problemas com acentuação
 mysqli_set_charset($link, "utf8mb4");
 
-// O arquivo termina aqui, sem a tag de fechamento.
+return $link;
+
+
+?>

@@ -1,13 +1,13 @@
 <?php
 // Inclui a restrição de acesso e a conexão com o banco
 require_once 'restricao_acesso.php';
-$link = require_once '../conexao.php'; 
+$link = require_once '../conexão.php'; 
 
 // Consulta SQL para buscar todas as disciplinas, juntando com o nome do curso
 $sql = "SELECT 
             d.id_disciplina, 
             d.nome_disciplina, 
-            d.codigo, 
+            d.codigo_disciplina, 
             d.carga_horaria, 
             c.nome_curso
         FROM disciplinas d
@@ -59,7 +59,7 @@ $result = mysqli_query($link, $sql);
                         <tr>
                             <td><?php echo $row['id_disciplina']; ?></td>
                             <td><?php echo htmlspecialchars($row['nome_disciplina']); ?></td>
-                            <td><?php echo htmlspecialchars($row['codigo']); ?></td>
+                            <td><?php echo htmlspecialchars($row['codigo_disciplina']); ?></td>
                             <td><?php echo $row['carga_horaria']; ?></td>
                             <td><?php echo htmlspecialchars($row['nome_curso']); ?></td>
                             <td>

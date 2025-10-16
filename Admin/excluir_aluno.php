@@ -1,6 +1,6 @@
 <?php
 // CORREÇÃO DE INCLUSÃO
-require_once 'restrição_acesso.php'; 
+require_once 'restricao_acesso.php'; 
 require_once '../conexão.php'; 
 
 // 1. Validar ID do Aluno

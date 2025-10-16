@@ -1,252 +1,181 @@
-<!-- -- =========================
--- Tabela: papeis (3 inserts)
--- =========================
-INSERT INTO papeis (nome_papel) VALUES 
-('Administrador'),
-('Professor'),
-('Aluno');
+<!-- SCRIPT BANCO DE DADOS -->
 
----
+<!-- /* ===========================================================
+   BANCO DE DADOS: sistema_escolar
+   MODELO NORMALIZADO (3FN) - 100% EM PORTUGUÊS
+   =========================================================== */
 
--- =========================
--- Tabela: usuarios (3 inserts)
--- Depende de: papeis
--- Senhas fictícias (ex: 'senha123')
--- =========================
--- Adm (id_papel = 1)
-INSERT INTO usuarios (id_papel, nome_completo, email, senha, ativo) VALUES 
-(1, 'Alice Silva (Admin)', 'alice.admin@escola.com', '$2y$10$abcdefghijklmnopqrstuvwxyza', 1);
-
--- Professor (id_papel = 2)
-INSERT INTO usuarios (id_papel, nome_completo, email, senha, ativo) VALUES 
-(2, 'Dr. Bruno Costa (Prof)', 'bruno.costa@escola.com', '$2y$10$abcdefghijklmnopqrstuvwxyza', 1);
-
--- Aluno (id_papel = 3)
-INSERT INTO usuarios (id_papel, nome_completo, email, senha, ativo) VALUES 
-(3, 'Carla Oliveira (Aluno)', 'carla.oliveira@aluno.com', '$2y$10$abcdefghijklmnopqrstuvwxyza', 1);
-
----
+DROP DATABASE IF EXISTS sistema_escolar;
+CREATE DATABASE sistema_escolar CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE sistema_escolar;
 
 -- =========================
--- Tabela: alunos (3 inserts)
--- Depende de: usuarios (id_usuario = 3, 4, 5 - *ajuste se necessário*)
--- Vamos supor que os próximos usuários inseridos sejam Alunos.
--- Para garantir a FK, vou inserir mais dois usuários do tipo 'Aluno'
+-- TABELA: Papéis de usuário
 -- =========================
--- Aluno (id_papel = 3)
-INSERT INTO usuarios (id_papel, nome_completo, email, senha, ativo) VALUES 
-(3, 'Daniel Pereira (Aluno)', 'daniel.pereira@aluno.com', '$2y$10$abcdefghijklmnopqrstuvwxyza', 1);
-INSERT INTO usuarios (id_papel, nome_completo, email, senha, ativo) VALUES 
-(3, 'Elaine Souza (Aluno)', 'elaine.souza@aluno.com', '$2y$10$abcdefghijklmnopqrstuvwxyza', 1);
-INSERT INTO usuarios (id_papel, nome_completo, email, senha, ativo) VALUES 
-(3, 'Pedro (Admin)', 'pedro2004@escola.com', '11111111', 1);
-
-
-
-INSERT INTO alunos (id_usuario, matricula, data_nascimento) VALUES 
-(3, '20250001', '2005-03-15'), -- Carla Oliveira (id_usuario=3)
-(4, '20250002', '2004-11-20'), -- Daniel Pereira (id_usuario=4)
-(5, '20250003', '2006-07-01'); -- Elaine Souza (id_usuario=5)
-
----
+CREATE TABLE papeis (
+    id_papel INT AUTO_INCREMENT PRIMARY KEY,
+    nome_papel VARCHAR(50) NOT NULL UNIQUE,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 -- =========================
--- Tabela: professores (3 inserts)
--- Depende de: usuarios (id_usuario = 2, 6, 7 - *ajuste se necessário*)
--- Vamos supor que os próximos usuários inseridos sejam Professores.
--- Para garantir a FK, vou inserir mais dois usuários do tipo 'Professor'
+-- TABELA: Usuários
 -- =========================
--- Professor (id_papel = 2)
-INSERT INTO usuarios (id_papel, nome_completo, email, senha, ativo) VALUES 
-(2, 'Dra. Fernanda Lima (Prof)', 'fernanda.lima@escola.com', '$2y$10$abcdefghijklmnopqrstuvwxyza', 1);
-INSERT INTO usuarios (id_papel, nome_completo, email, senha, ativo) VALUES 
-(2, 'Prof. Gustavo Reis (Prof)', 'gustavo.reis@escola.com', '$2y$10$abcdefghijklmnopqrstuvwxyza', 1);
-
-
-INSERT INTO professores (id_usuario, registro_funcional, data_admissao) VALUES 
-(2, 'PROF001', '2018-08-01'), -- Dr. Bruno Costa (id_usuario=2)
-(6, 'PROF002', '2020-02-10'), -- Dra. Fernanda Lima (id_usuario=6)
-(7, 'PROF003', '2022-09-01'); -- Prof. Gustavo Reis (id_usuario=7)
-
----
+CREATE TABLE usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    id_papel INT NOT NULL,
+    nome_completo VARCHAR(150) NOT NULL,
+    email VARCHAR(160) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    ativo TINYINT(1) NOT NULL DEFAULT 1,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_usuarios_papel FOREIGN KEY (id_papel) REFERENCES papeis(id_papel)
+);
 
 -- =========================
--- Tabela: cursos (3 inserts)
+-- TABELA: Alunos
 -- =========================
-INSERT INTO cursos (nome_curso, descricao) VALUES 
-('Engenharia de Software', 'Focado no desenvolvimento e gestão de sistemas de software.'),
-('Ciências Contábeis', 'Prepara para a área de contabilidade, auditoria e finanças.'),
-('Design Gráfico', 'Focado na criação de soluções visuais e comunicação.');
-
----
-
--- =========================
--- Tabela: disciplinas (3 inserts)
--- Depende de: cursos (id_curso = 1, 2, 3)
--- =========================
-INSERT INTO disciplinas (id_curso, codigo_disciplina, nome_disciplina, carga_horaria) VALUES 
-(1, 'ES001', 'Algoritmos e Estrutura de Dados', 80),  -- Eng. Software
-(2, 'CC101', 'Contabilidade Geral', 60),               -- Ciências Contábeis
-(1, 'ES002', 'Banco de Dados Avançado', 80);            -- Eng. Software
-
----
+CREATE TABLE alunos (
+    id_aluno INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL UNIQUE,
+    matricula VARCHAR(20) NOT NULL UNIQUE,
+    data_nascimento DATE,
+    CONSTRAINT fk_alunos_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+);
 
 -- =========================
--- Tabela: turmas (3 inserts)
--- Depende de: cursos (id_curso = 1, 2)
+-- TABELA: Professores
 -- =========================
-INSERT INTO turmas (id_curso, nome_turma, ano, semestre) VALUES 
-(1, 'ES-2025-1A', 2025, 1), -- Turma 1 de Eng. Software
-(1, 'ES-2025-1B', 2025, 1), -- Turma 2 de Eng. Software
-(2, 'CC-2025-1A', 2025, 1); -- Turma 1 de C. Contábeis
-
----
-
--- =========================
--- Tabela: disciplinas_turmas (3 inserts)
--- Depende de: turmas (id_turma = 1, 2, 3), disciplinas (id_disciplina = 1, 2, 3), professores (id_professor = 1, 2, 3)
--- =========================
-INSERT INTO disciplinas_turmas (id_turma, id_disciplina, id_professor) VALUES 
-(1, 1, 1), -- Algoritmos (ES001) na turma ES-2025-1A com Prof. Bruno Costa
-(2, 3, 2), -- BD Avançado (ES002) na turma ES-2025-1B com Prof. Fernanda Lima
-(3, 2, 3); -- Contabilidade (CC101) na turma CC-2025-1A com Prof. Gustavo Reis
-
----
+CREATE TABLE professores (
+    id_professor INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL UNIQUE,
+    registro_funcional VARCHAR(20) NOT NULL UNIQUE,
+    data_admissao DATE,
+    CONSTRAINT fk_professores_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+);
 
 -- =========================
--- Tabela: matriculas (3 inserts)
--- Depende de: turmas (id_turma = 1, 3), alunos (id_aluno = 1, 2, 3)
+-- TABELA: Cursos
 -- =========================
-INSERT INTO matriculas (id_turma, id_aluno, situacao) VALUES 
-(1, 1, 'ativa'),      -- Aluno Carla na Turma ES-2025-1A
-(3, 2, 'ativa'),      -- Aluno Daniel na Turma CC-2025-1A
-(1, 3, 'trancada');   -- Aluno Elaine na Turma ES-2025-1A (trancada)
-
----
+CREATE TABLE cursos (
+    id_curso INT AUTO_INCREMENT PRIMARY KEY,
+    nome_curso VARCHAR(120) NOT NULL UNIQUE,
+    descricao TEXT
+);
 
 -- =========================
--- Tabela: aulas (3 inserts)
--- Depende de: disciplinas_turmas (id_disc_turma = 1)
--- Vamos focar na primeira disciplina/turma (id_disc_turma = 1)
+-- TABELA: Disciplinas
 -- =========================
-INSERT INTO aulas (id_disc_turma, data_aula, conteudo) VALUES 
-(1, '2025-03-03', 'Introdução à Lógica de Programação'),
-(1, '2025-03-05', 'Estruturas Condicionais'),
-(1, '2025-03-08', 'Estruturas de Repetição');
-
----
-
--- =========================
--- Tabela: frequencias (3 inserts)
--- Depende de: aulas (id_aula = 1, 2, 3), alunos (id_aluno = 1)
--- Focando no Aluno Carla (id_aluno=1)
--- =========================
-INSERT INTO frequencias (id_aula, id_aluno, status) VALUES 
-(1, 1, 'Presente'),   -- Carla na aula 1
-(2, 1, 'Falta'),      -- Carla na aula 2
-(3, 1, 'Presente');   -- Carla na aula 3
-
----
+CREATE TABLE disciplinas (
+    id_disciplina INT AUTO_INCREMENT PRIMARY KEY,
+    id_curso INT NOT NULL,
+    codigo_disciplina VARCHAR(20) NOT NULL UNIQUE,
+    nome_disciplina VARCHAR(120) NOT NULL,
+    carga_horaria INT DEFAULT 0,
+    CONSTRAINT fk_disciplinas_curso FOREIGN KEY (id_curso) REFERENCES cursos(id_curso)
+);
 
 -- =========================
--- Tabela: avaliacoes (3 inserts)
--- Depende de: disciplinas_turmas (id_disc_turma = 1)
--- Focando na primeira disciplina/turma (id_disc_turma = 1)
+-- TABELA: Turmas
 -- =========================
-INSERT INTO avaliacoes (id_disc_turma, titulo, peso, data_avaliacao) VALUES 
-(1, 'Prova 1 - Lógica', 4.00, '2025-04-10'),
-(1, 'Trabalho Prático - Arrays', 3.00, '2025-05-15'),
-(1, 'Exame Final', 3.00, '2025-06-25');
-
----
-
--- =========================
--- Tabela: notas (3 inserts)
--- Depende de: avaliacoes (id_avaliacao = 1, 2, 3), alunos (id_aluno = 1)
--- Focando no Aluno Carla (id_aluno=1) nas três avaliações
--- =========================
-INSERT INTO notas (id_avaliacao, id_aluno, valor) VALUES 
-(1, 1, 8.5),   -- Nota de Carla na Prova 1
-(2, 1, 9.0),   -- Nota de Carla no Trabalho Prático
-(3, 1, 7.8);   -- Nota de Carla no Exame Final
-
----
+CREATE TABLE turmas (
+    id_turma INT AUTO_INCREMENT PRIMARY KEY,
+    id_curso INT NOT NULL,
+    nome_turma VARCHAR(80) NOT NULL,
+    ano SMALLINT NOT NULL,
+    semestre TINYINT NOT NULL CHECK (semestre IN (1,2)),
+    CONSTRAINT fk_turmas_curso FOREIGN KEY (id_curso) REFERENCES cursos(id_curso),
+    UNIQUE (id_curso, nome_turma, ano, semestre)
+);
 
 -- =========================
--- Tabela: auditoria (3 inserts)
--- Depende de: usuarios (id_usuario = 1)
+-- TABELA: Disciplinas por Turma e Professor
 -- =========================
-INSERT INTO auditoria (id_usuario, acao, entidade, id_entidade) VALUES 
-(1, 'CRIAÇÃO', 'alunos', '1'),
-(1, 'ATUALIZAÇÃO', 'usuarios', '3'),
-(1, 'EXCLUSÃO', 'turmas', '99'); -- Ação simulada de exclusão
+CREATE TABLE disciplinas_turmas (
+    id_disc_turma INT AUTO_INCREMENT PRIMARY KEY,
+    id_turma INT NOT NULL,
+    id_disciplina INT NOT NULL,
+    id_professor INT NOT NULL,
+    CONSTRAINT fk_disc_turma_turma FOREIGN KEY (id_turma) REFERENCES turmas(id_turma),
+    CONSTRAINT fk_disc_turma_disc FOREIGN KEY (id_disciplina) REFERENCES disciplinas(id_disciplina),
+    CONSTRAINT fk_disc_turma_prof FOREIGN KEY (id_professor) REFERENCES professores(id_professor),
+    UNIQUE (id_turma, id_disciplina)
+);
 
+-- =========================
+-- TABELA: Matrículas
+-- =========================
+CREATE TABLE matriculas (
+    id_matricula INT AUTO_INCREMENT PRIMARY KEY,
+    id_turma INT NOT NULL,
+    id_aluno INT NOT NULL,
+    situacao ENUM('ativa','trancada','concluída','cancelada') DEFAULT 'ativa',
+    data_matricula DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_matricula_turma FOREIGN KEY (id_turma) REFERENCES turmas(id_turma),
+    CONSTRAINT fk_matricula_aluno FOREIGN KEY (id_aluno) REFERENCES alunos(id_aluno),
+    UNIQUE (id_turma, id_aluno)
+);
 
+-- =========================
+-- TABELA: Aulas
+-- =========================
+CREATE TABLE aulas (
+    id_aula INT AUTO_INCREMENT PRIMARY KEY,
+    id_disc_turma INT NOT NULL,
+    data_aula DATE NOT NULL,
+    conteudo VARCHAR(200),
+    CONSTRAINT fk_aulas_disc_turma FOREIGN KEY (id_disc_turma) REFERENCES disciplinas_turmas(id_disc_turma),
+    UNIQUE (id_disc_turma, data_aula)
+);
 
--- Exibir conteúdo da tabela papeis
-SELECT * FROM papeis;
+-- =========================
+-- TABELA: Frequências
+-- =========================
+CREATE TABLE frequencias (
+    id_frequencia INT AUTO_INCREMENT PRIMARY KEY,
+    id_aula INT NOT NULL,
+    id_aluno INT NOT NULL,
+    status ENUM('Presente','Falta','Justificada') DEFAULT 'Presente',
+    CONSTRAINT fk_freq_aula FOREIGN KEY (id_aula) REFERENCES aulas(id_aula),
+    CONSTRAINT fk_freq_aluno FOREIGN KEY (id_aluno) REFERENCES alunos(id_aluno),
+    UNIQUE (id_aula, id_aluno)
+);
 
----
+-- =========================
+-- TABELA: Avaliações
+-- =========================
+CREATE TABLE avaliacoes (
+    id_avaliacao INT AUTO_INCREMENT PRIMARY KEY,
+    id_disc_turma INT NOT NULL,
+    titulo VARCHAR(100) NOT NULL,
+    peso DECIMAL(5,2) DEFAULT 1.00,
+    data_avaliacao DATE,
+    CONSTRAINT fk_avaliacao_disc_turma FOREIGN KEY (id_disc_turma) REFERENCES disciplinas_turmas(id_disc_turma)
+);
 
--- Exibir conteúdo da tabela usuarios
-SELECT * FROM usuarios;
+-- =========================
+-- TABELA: Notas
+-- =========================
+CREATE TABLE notas (
+    id_nota INT AUTO_INCREMENT PRIMARY KEY,
+    id_avaliacao INT NOT NULL,
+    id_aluno INT NOT NULL,
+    valor DECIMAL(5,2) CHECK (valor BETWEEN 0 AND 10),
+    CONSTRAINT fk_nota_avaliacao FOREIGN KEY (id_avaliacao) REFERENCES avaliacoes(id_avaliacao),
+    CONSTRAINT fk_nota_aluno FOREIGN KEY (id_aluno) REFERENCES alunos(id_aluno),
+    UNIQUE (id_avaliacao, id_aluno)
+);
 
----
-
--- Exibir conteúdo da tabela alunos
-SELECT * FROM alunos;
-
----
-
--- Exibir conteúdo da tabela professores
-SELECT * FROM professores;
-
----
-
--- Exibir conteúdo da tabela cursos
-SELECT * FROM cursos;
-
----
-
--- Exibir conteúdo da tabela disciplinas
-SELECT * FROM disciplinas;
-
----
-
--- Exibir conteúdo da tabela turmas
-SELECT * FROM turmas;
-
----
-
--- Exibir conteúdo da tabela disciplinas_turmas
-SELECT * FROM disciplinas_turmas;
-
----
-
--- Exibir conteúdo da tabela matriculas
-SELECT * FROM matriculas;
-
----
-
--- Exibir conteúdo da tabela aulas
-SELECT * FROM aulas;
-
----
-
--- Exibir conteúdo da tabela frequencias
-SELECT * FROM frequencias;
-
----
-
--- Exibir conteúdo da tabela avaliacoes
-SELECT * FROM avaliacoes;
-
----
-
--- Exibir conteúdo da tabela notas
-SELECT * FROM notas;
-
----
-
--- Exibir conteúdo da tabela auditoria
-SELECT * FROM auditoria; -->
+-- =========================
+-- TABELA: Auditoria
+-- =========================
+CREATE TABLE auditoria (
+    id_auditoria INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT,
+    acao VARCHAR(80),
+    entidade VARCHAR(80),
+    id_entidade VARCHAR(80),
+    data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_auditoria_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+); -->

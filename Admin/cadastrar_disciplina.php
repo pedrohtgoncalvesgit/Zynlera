@@ -1,6 +1,6 @@
 <?php
 require_once 'restricao_acesso.php';
-$link = require_once '../conexao.php';
+require_once '../conexão.php';
 
 $id_curso = $nome_disciplina = $codigo = $carga_horaria = "";
 $id_curso_err = $nome_disciplina_err = $codigo_err = $carga_horaria_err = $erro_geral = "";
@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($carga_horaria) || !is_numeric($carga_horaria) || $carga_horaria <= 0) { $carga_horaria_err = "Carga horária inválida."; }
 
     if (empty($id_curso_err) && empty($nome_disciplina_err) && empty($codigo_err) && empty($carga_horaria_err)) {
-        $sql = "INSERT INTO disciplinas (id_curso, nome_disciplina, codigo, carga_horaria) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO disciplinas (id_curso, nome_disciplina, codigo_disciplina, carga_horaria) VALUES (?, ?, ?, ?)";
         
         if ($stmt = mysqli_prepare($link, $sql)) {
             mysqli_stmt_bind_param($stmt, "issi", $param_id_curso, $param_nome, $param_codigo, $param_carga);

@@ -1,9 +1,9 @@
 <?php
-// O CÓDIGO PHP CONTINUA INTACTO
 require_once 'sessao.php';
 require_once 'config.php';
 require_once 'conexão.php';
 
+// Se o usuário já estiver logado, redireciona para o dashboard
 if (is_logged_in()) {
     header("location: dashboard.php");
     exit;
@@ -12,21 +12,26 @@ if (is_logged_in()) {
 $email = $senha = "";
 $email_err = $senha_err = $login_err = "";
 
+// Processamento do formulário
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // ... (toda a sua lógica de validação continua aqui, intacta) ...
+    
+    // 1. Validação do Email
     if (empty(trim($_POST["email"]))) {
         $email_err = "Por favor, insira o email.";
     } else {
         $email = trim($_POST["email"]);
     }
     
+    // 2. Validação da Senha
     if (empty(trim($_POST["senha"]))) {
         $senha_err = "Por favor, insira a senha.";
     } else {
         $senha = trim($_POST["senha"]);
     }
     
+    // 3. Validação das Credenciais
     if (empty($email_err) && empty($senha_err)) {
+        // CORREÇÃO: Incluindo 'AND u.ativo = 1' para bloquear usuários inativos
         $sql = "SELECT u.id_usuario, u.nome_completo, u.email, u.senha, p.nome_papel 
                 FROM usuarios u
                 INNER JOIN papeis p ON u.id_papel = p.id_papel
@@ -42,14 +47,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if (mysqli_stmt_num_rows($stmt) == 1) {
                     mysqli_stmt_bind_result($stmt, $id_usuario, $nome_completo, $email_db, $senha_db, $papel);
                     if (mysqli_stmt_fetch($stmt)) {
+                        // AINDA SEM CRIPTOGRAFIA - Lembre-se de implementar password_verify() aqui
                         if ($senha == $senha_db) { 
+                            // Senha correta, inicia a sessão
                             session_regenerate_id();
                             $_SESSION["loggedin"] = true;
                             $_SESSION["id_usuario"] = $id_usuario;
                             $_SESSION["nome_completo"] = $nome_completo;
                             $_SESSION["email"] = $email_db;
-                            $_SESSION["papel"] = $papel;
+                            $_SESSION["papel"] = $papel; // 'Administrador', 'Professor', 'Aluno'
 
+                            if ($papel == 'Professor') {
+                                $sql_professor = "SELECT id_professor FROM professores WHERE id_usuario = ?";
+                                if ($stmt_professor = mysqli_prepare($link, $sql_professor)) {
+                                    mysqli_stmt_bind_param($stmt_professor, "i", $id_usuario);
+                                    mysqli_stmt_execute($stmt_professor);
+                                    mysqli_stmt_store_result($stmt_professor);
+                                    if (mysqli_stmt_num_rows($stmt_professor) == 1) {
+                                        mysqli_stmt_bind_result($stmt_professor, $id_professor);
+                                        mysqli_stmt_fetch($stmt_professor);
+                                        $_SESSION['id_professor'] = $id_professor;
+                                    }
+                                    mysqli_stmt_close($stmt_professor);
+                                }
+                            }
                             header("location: dashboard.php");
                             exit;
                         } else {
@@ -65,9 +86,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mysqli_stmt_close($stmt);
         }
     }
-    mysqli_close($link);
+    // Não feche a conexão aqui se ela for usada no restante da página
+    // mysqli_close($link);
 }
-// FIM DO BLOCO PHP
 ?>
 
 <!DOCTYPE html>
@@ -89,9 +110,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .right-login{ width: 50vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
         .card-login{ width: 60%; max-width: 400px; display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 30px 35px; background-color: #2f2841; border-radius: 20px; box-shadow: 0px 10px 40px #00000056 ; }
         
-        /* ================================================= */
-        /* == CORREÇÃO DEFINITIVA FEITA AQUI (REMOVIDO O >) == */
-        /* ================================================= */
         .card-login h1{
             color: rgb(0, 255 , 255);
             font-weight: 800;
@@ -122,7 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h1>Login</h1>
                     <?php 
                     if (!empty($login_err)) {
-                        echo '<div class="login-alert">' . $login_err . '</div>';
+                        echo '<div class="login-alert">' . htmlspecialchars($login_err) . '</div>';
                     } 
                     if (isset($_GET['expirada']) && $_GET['expirada'] == 'true') {
                         echo '<div class="login-alert">Sua sessão expirou por inatividade. Faça login novamente.</div>';
@@ -130,7 +148,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     ?>
                     <div class="text-field">
                         <label for="email">Usuário (Email)</label>
-                        <input type="text" name="email" id="email" placeholder="Digite seu email" value="<?php echo $email; ?>">
+                        <input type="text" name="email" id="email" placeholder="Digite seu email" value="<?php echo htmlspecialchars($email); ?>">
                         <span class="error-message"><?php echo $email_err; ?></span>
                     </div>
                     <div class="text-field">

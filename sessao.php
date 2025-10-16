@@ -33,5 +33,4 @@ function get_user_role() {
 function is_role($role_name) {
     return get_user_role() === $role_name;
 }
-// testando
 ?>

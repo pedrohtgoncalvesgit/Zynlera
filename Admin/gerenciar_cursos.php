@@ -1,6 +1,6 @@
 <?php
 // Inclui a restrição de acesso e a conexão com o banco
-require_once 'restrição_acesso.php';
+require_once 'restricao_acesso.php';
 require_once '../conexão.php';
 
 // Consulta SQL para buscar todos os cursos

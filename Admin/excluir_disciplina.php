@@ -1,6 +1,6 @@
 <?php
 require_once 'restricao_acesso.php';
-$link = require_once '../conexao.php';
+$link = require_once '../conexão.php';
 
 if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
     

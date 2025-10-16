@@ -18,10 +18,11 @@ $nome = $_SESSION["nome_completo"];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sistema Escolar</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         /* --- Estilos Gerais --- */
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
@@ -161,7 +162,7 @@ $nome = $_SESSION["nome_completo"];
         .btn-blue { background-color: #17a2b8; }
         .btn-red { background-color: #dc3545; }
         .btn-dark-blue { background-color: #007bff; }
-        .btn-yellow { background-color: #ffc107; }
+        .btn-yellow { background-color: #ffc107; color: #333 !important; }
 
         /* --- Link de Logout --- */
         .logout-section {
@@ -206,25 +207,23 @@ $nome = $_SESSION["nome_completo"];
             </div>
 
             <h2>Dashboard de <?php echo htmlspecialchars($papel); ?></h2>
-            <p>Este é o ponto de acesso inicial. Suas funcionalidades específicas de <?php echo htmlspecialchars($papel); ?> estarão listadas abaixo.</p>
+            <p>Este é o ponto de acesso inicial. As suas funcionalidades específicas estarão listadas abaixo.</p>
 
             <section class="menu-section">
                 <?php 
                 if (is_role('Administrador')) {
                     echo '<h3>Funcionalidades de Administrador:</h3>';
                     echo '<div class="menu-grid">';
-                    echo '<a href="admin/gerenciar_alunos.php" class="menu-button btn-dark-blue"><i class="fa-solid fa-users"></i> Gerenciar Alunos</a>';
-                    echo '<a href="admin/gerenciar_professores.php" class="menu-button btn-purple"><i class="fa-solid fa-chalkboard-user"></i> Gerenciar Professores</a>';
-                    echo '<a href="admin/gerenciar_turmas.php" class="menu-button btn-orange"><i class="fa-solid fa-book-open"></i> Gerenciar Turmas e Disciplinas</a>';
-                    echo '<a href="admin/corrigir_notas.php" class="menu-button btn-red"><i class="fa-solid fa-marker"></i> Corrigir Notas/Faltas</a>';
+                    echo '<a href="Admin/gerenciar_alunos.php" class="menu-button btn-dark-blue"><i class="fa-solid fa-users"></i> Gerenciar Alunos</a>';
+                    echo '<a href="Admin/gerenciar_professores.php" class="menu-button btn-purple"><i class="fa-solid fa-chalkboard-user"></i> Gerenciar Professores</a>';
+                    echo '<a href="Admin/gerenciar_turmas.php" class="menu-button btn-orange"><i class="fa-solid fa-book-open"></i> Gerenciar Turmas e Disciplinas</a>';
+                    echo '<a href="Admin/corrigir_notas.php" class="menu-button btn-red"><i class="fa-solid fa-marker"></i> Corrigir Notas/Faltas</a>';
                     echo '<a href="relatorios.php" class="menu-button btn-blue"><i class="fa-solid fa-chart-line"></i> Visualizar Relatórios</a>';
                     echo '</div>';
                 } elseif (is_role('Professor')) {
                     echo '<h3>Funcionalidades de Professor:</h3>';
                     echo '<div class="menu-grid">';
-                    echo '<a href="admin/visualizar_turmas.php" class="menu-button btn-green"><i class="fa-solid fa-school"></i> Visualizar Turmas Vinculadas</a>';
-                    echo '<a href="admin/gerenciar_turmas.php" class="menu-button btn-orange"><i class="fa-solid fa-book"></i> Gerenciar Disciplinas</a>';
-                    echo '<a href="admin/lancar_notas_faltas.php" class="menu-button btn-purple"><i class="fa-solid fa-clipboard-check"></i> Lançar Notas/Faltas</a>';
+                    echo '<a href="Professor/gerenciar_turmas.php" class="menu-button btn-green"><i class="fa-solid fa-school"></i> Visualizar Turmas e Lançar Notas</a>';
                     echo '<a href="relatorios.php?nivel=professor" class="menu-button btn-blue"><i class="fa-solid fa-file-invoice"></i> Gerar Relatórios</a>';
                     echo '</div>';
                 } elseif (is_role('Aluno')) {

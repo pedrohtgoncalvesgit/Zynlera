@@ -1,5 +1,5 @@
 <?php
-require_once 'restrição_acesso.php';
+require_once 'restricao_acesso.php';
 require_once '../conexão.php';
 // 1. Validar e Obter o ID do Vínculo (id_disciplina_turma_professor)
 if (!isset($_GET['id_vinculo']) || empty(trim($_GET['id_vinculo']))) {

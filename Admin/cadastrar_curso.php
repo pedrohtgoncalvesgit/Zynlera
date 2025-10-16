@@ -1,5 +1,5 @@
 <?php
-require_once 'restrição_acesso.php';
+require_once 'restricao_acesso.php';
 require_once '../conexão.php';
 
 $nome_curso = $descricao = "";

@@ -1,6 +1,6 @@
 <?php
 // gerenciar_disciplinas_professor.php (Lista as disciplinas do Professor em uma Turma)
-require_once 'restrição_acesso.php';
+require_once 'restricao_acesso.php';
 require_once '../conexão.php';
 
 // 1. Validar e Obter ID da Turma

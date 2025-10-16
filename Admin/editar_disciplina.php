@@ -1,6 +1,6 @@
 <?php
 require_once 'restricao_acesso.php';
-$link = require_once '../conexao.php';
+$link = require_once '../conexão.php';
 
 $id_disciplina = $id_curso = $nome_disciplina = $codigo = $carga_horaria = "";
 $id_curso_err = $nome_disciplina_err = $codigo_err = $carga_horaria_err = $erro_geral = "";
@@ -12,7 +12,7 @@ $cursos_result = mysqli_query($link, "SELECT id_curso, nome_curso FROM cursos OR
 if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
     $id_disciplina_param = trim($_GET["id"]);
 
-    $sql = "SELECT id_disciplina, id_curso, nome_disciplina, codigo, carga_horaria FROM disciplinas WHERE id_disciplina = ?";
+    $sql = "SELECT id_disciplina, id_curso, nome_disciplina, codigo_disciplina, carga_horaria FROM disciplinas WHERE id_disciplina = ?";
     if ($stmt = mysqli_prepare($link, $sql)) {
         mysqli_stmt_bind_param($stmt, "i", $param_id_disciplina);
         $param_id_disciplina = $id_disciplina_param;
@@ -23,7 +23,7 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
                 $id_disciplina = $row["id_disciplina"];
                 $id_curso = $row["id_curso"];
                 $nome_disciplina = $row["nome_disciplina"];
-                $codigo = $row["codigo"];
+                $codigo = $row["codigo_disciplina"];
                 $carga_horaria = $row["carga_horaria"];
             } else {
                 header("location: gerenciar_disciplinas.php?erro=nao_encontrado");
@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($id_curso_err) && empty($nome_disciplina_err) && empty($codigo_err) && empty($carga_horaria_err)) {
         
-        $sql = "UPDATE disciplinas SET id_curso = ?, nome_disciplina = ?, codigo = ?, carga_horaria = ? WHERE id_disciplina = ?";
+        $sql = "UPDATE disciplinas SET id_curso = ?, nome_disciplina = ?, codigo_disciplina = ?, carga_horaria = ? WHERE id_disciplina = ?";
         if ($stmt = mysqli_prepare($link, $sql)) {
             mysqli_stmt_bind_param($stmt, "issii", $param_id_curso, $param_nome, $param_codigo, $param_carga, $param_id_disciplina);
             $param_id_curso = $id_curso;
