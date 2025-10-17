@@ -198,7 +198,7 @@ $result = mysqli_query($link, $sql);
 <body>
 
     <header class="main-header">
-        <div class="logo">Sistema Escolar</div>
+        <div class="logo">Zynlera</div>
         <nav class="main-nav">
             <a href="../dashboard.php"><i class="fa-solid fa-gauge"></i> Dashboard</a>
             <a href="gerenciar_alunos.php"><i class="fa-solid fa-users"></i> Alunos</a>
