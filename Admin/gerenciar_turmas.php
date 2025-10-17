@@ -18,66 +18,234 @@ $result = mysqli_query($link, $sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Turmas</title>
+    <title>Gerenciamento de Turmas - Sistema Escolar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; }
-        .wrapper { width: 90%; margin: 0 auto; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .btn-add { background-color: #28a745; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; }
-        .action-link { margin-right: 10px; text-decoration: none; white-space: nowrap; }
+        /* --- Estilos Gerais (COPIADOS DA SUA PÁGINA gerenciar_alunos.php) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f4f7fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Cabeçalho Superior --- */
+        .main-header {
+            background: linear-gradient(90deg, #0056b3, #007bff);
+            color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+        
+        .main-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+
+        .main-nav a:hover {
+            opacity: 1;
+        }
+
+        /* --- Conteúdo Principal --- */
+        .container {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 20px auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .content-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: left;
+        }
+
+        .content-card h2 {
+            font-size: 1.8em;
+            color: #0056b3;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .content-card h2 i {
+            margin-right: 15px;
+            color: #007bff;
+        }
+
+        /* --- Botão Adicionar --- */
+        .btn-add {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 25px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-bottom: 30px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-add i {
+            margin-right: 10px;
+        }
+
+        .btn-add:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        /* --- Tabela --- */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .data-table thead th {
+            background-color: #f0f8ff;
+            color: #333;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        .data-table tbody tr:nth-child(even) {
+            background-color: #fdfdfd;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #eef7ff;
+        }
+
+        /* --- Ações na Tabela --- */
+        .action-links a {
+            margin-right: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-links .edit-link { color: #007bff; }
+        .action-links .edit-link:hover { color: #0056b3; }
+        
+        .action-links .disciplinas-link { color: #17a2b8; } /* Cor para Disciplinas */
+        .action-links .disciplinas-link:hover { color: #117a8b; }
+
+        .action-links .matriculas-link { color: #fd7e14; } /* Cor para Matrículas */
+        .action-links .matriculas-link:hover { color: #e86a00; }
+
+        .action-links .delete-link { color: #dc3545; } /* Cor para Excluir */
+        .action-links .delete-link:hover { color: #c82333; }
+
+        /* --- Mensagem de Sem Dados --- */
+        .no-data-message {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
     </style>
 </head>
 <body>
 
-    <?php include 'menu_admin.php'; // Seu menu de navegação ?>
+    <header class="main-header">
+        <div class="logo">Zynlera</div>
+        <nav class="main-nav">
+            <a href="../dashboard.php"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <a href="gerenciar_alunos.php"><i class="fa-solid fa-users"></i> Alunos</a>
+            <a href="gerenciar_turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
+            <a href="../logout.php"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
+        </nav>
+    </header>
 
-    <div class="wrapper">
-        <h2>Gerenciamento de Turmas</h2>
-        
-        <a href="cadastrar_turma.php" class="btn-add">Adicionar Nova Turma</a>
-        
-        <?php if (mysqli_num_rows($result) > 0): ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Curso</th>
-                    <th>Turma</th>
-                    <th>Ano</th>
-                    <th>Semestre</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                <tr>
-                    <td><?php echo $row['id_turma']; ?></td>
-                    <td><?php echo htmlspecialchars($row['curso']); ?></td>
-                    <td><?php echo htmlspecialchars($row['nome_turma']); ?></td>
-                    <td><?php echo $row['ano']; ?></td>
-                    <td><?php echo $row['semestre']; ?></td>
-                    <td>
-                        <a href="editar_turma.php?id=<?php echo $row['id_turma']; ?>" class="action-link">Editar</a> |
-                        
-                        <a href="gerenciar_disciplinas_turma.php?id=<?php echo $row['id_turma']; ?>" class="action-link">Disciplinas/Professores</a> |
-                        
-                        <a href="gerenciar_matriculas.php?id_turma=<?php echo $row['id_turma']; ?>" class="action-link">Matrículas</a> |
+    <main class="container">
+        <div class="content-card">
+            <h2><i class="fa-solid fa-users-rectangle"></i> Gerenciamento de Turmas</h2>
+            <a href="cadastrar_turma.php" class="btn-add">
+                <i class="fa-solid fa-plus"></i> Adicionar Nova Turma
+            </a>
+            
+            <?php if (mysqli_num_rows($result) > 0): ?>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Curso</th>
+                        <th>Turma</th>
+                        <th>Ano</th>
+                        <th>Semestre</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                    <tr>
+                        <td><?php echo $row['id_turma']; ?></td>
+                        <td><?php echo htmlspecialchars($row['curso']); ?></td>
+                        <td><?php echo htmlspecialchars($row['nome_turma']); ?></td>
+                        <td><?php echo $row['ano']; ?></td>
+                        <td><?php echo $row['semestre']; ?></td>
+                        <td class="action-links">
+                            <a href="editar_turma.php?id=<?php echo $row['id_turma']; ?>" class="edit-link"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+                            <a href="gerenciar_disciplinas_turma.php?id=<?php echo $row['id_turma']; ?>" class="disciplinas-link"><i class="fa-solid fa-book"></i> Disciplinas</a>
+                            <a href="gerenciar_matriculas.php?id_turma=<?php echo $row['id_turma']; ?>" class="matriculas-link"><i class="fa-solid fa-address-card"></i> Matrículas</a>
+                            <a href="excluir_turma.php?id=<?php echo $row['id_turma']; ?>" onclick="return confirm('Tem certeza que deseja excluir esta turma?')" class="delete-link"><i class="fa-solid fa-trash-can"></i> Excluir</a>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+            <?php else: ?>
+                <p class="no-data-message">Nenhuma turma cadastrada no momento.</p>
+            <?php endif; ?>
+        </div>
+    </main>
 
-                        <a href="excluir_turma.php?id=<?php echo $row['id_turma']; ?>" 
-                           onclick="return confirm('Tem certeza que deseja excluir esta turma?')"
-                           class="action-link">Excluir</a>
-                    </td>
-                </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
-        <?php else: ?>
-            <p style="margin-top: 20px;">Nenhuma turma cadastrada.</p>
-        <?php endif; ?>
-
-        <?php mysqli_close($link); ?>
-    </div>
 </body>
 </html>
+
+<?php
+mysqli_close($link);
+?>
