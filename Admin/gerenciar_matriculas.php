@@ -39,16 +39,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['aca
     if (!empty($_POST['id_aluno'])) {
         $id_aluno = trim($_POST['id_aluno']);
 
-        $sql_insert = "INSERT INTO matriculas (id_turma, id_aluno, situacao) VALUES (?, ?, 'ativa')";
-        if ($stmt_insert = mysqli_prepare($link, $sql_insert)) {
-            mysqli_stmt_bind_param($stmt_insert, "ii", $id_turma, $id_aluno);
-            if (mysqli_stmt_execute($stmt_insert)) {
-                header("location: gerenciar_matriculas.php?id_turma=" . $id_turma . "&sucesso=1");
-                exit();
+        // Verificar se já existe uma matrícula cancelada
+        $sql_check = "SELECT id_matricula FROM matriculas WHERE id_turma = ? AND id_aluno = ? AND situacao = 'cancelada'";
+        if ($stmt_check = mysqli_prepare($link, $sql_check)) {
+            mysqli_stmt_bind_param($stmt_check, "ii", $id_turma, $id_aluno);
+            mysqli_stmt_execute($stmt_check);
+            $result_check = mysqli_stmt_get_result($stmt_check);
+            
+            if (mysqli_num_rows($result_check) == 1) {
+                // Rematrícula: Atualiza a situação para 'ativa'
+                $matricula_reativar = mysqli_fetch_assoc($result_check);
+                $id_matricula_reativar = $matricula_reativar['id_matricula'];
+                $sql_update = "UPDATE matriculas SET situacao = 'ativa' WHERE id_matricula = ?";
+                if ($stmt_update = mysqli_prepare($link, $sql_update)) {
+                    mysqli_stmt_bind_param($stmt_update, "i", $id_matricula_reativar);
+                    if (mysqli_stmt_execute($stmt_update)) {
+                        header("location: gerenciar_matriculas.php?id_turma=" . $id_turma . "&sucesso=2"); // Sucesso = 2 para rematrícula
+                        exit();
+                    }
+                }
             } else {
-                $mensagem_erro = "Erro ao matricular o aluno. O aluno já pode estar matriculado.";
+                // Matrícula nova: Insere um novo registro
+                $sql_insert = "INSERT INTO matriculas (id_turma, id_aluno, situacao) VALUES (?, ?, 'ativa')";
+                if ($stmt_insert = mysqli_prepare($link, $sql_insert)) {
+                    mysqli_stmt_bind_param($stmt_insert, "ii", $id_turma, $id_aluno);
+                    if (mysqli_stmt_execute($stmt_insert)) {
+                        header("location: gerenciar_matriculas.php?id_turma=" . $id_turma . "&sucesso=1");
+                        exit();
+                    } else {
+                        $mensagem_erro = "Erro ao matricular o aluno. O aluno já pode estar ativo na turma.";
+                    }
+                    mysqli_stmt_close($stmt_insert);
+                }
             }
-            mysqli_stmt_close($stmt_insert);
+            mysqli_stmt_close($stmt_check);
         }
     } else {
         $mensagem_erro = "Por favor, selecione um aluno.";
@@ -64,7 +88,7 @@ $sql_alunos_disponiveis = "
     FROM alunos a
     INNER JOIN usuarios u ON a.id_usuario = u.id_usuario
     WHERE u.ativo = 1 AND a.id_aluno NOT IN (
-        SELECT id_aluno FROM matriculas WHERE id_turma = ?
+        SELECT id_aluno FROM matriculas WHERE id_turma = ? AND situacao = 'ativa'
     )
     ORDER BY u.nome_completo";
     
@@ -89,7 +113,7 @@ $sql_alunos_matriculados = "
     FROM matriculas m
     INNER JOIN alunos a ON m.id_aluno = a.id_aluno
     INNER JOIN usuarios u ON a.id_usuario = u.id_usuario
-    WHERE m.id_turma = ?
+    WHERE m.id_turma = ? AND m.situacao = 'ativa'
     ORDER BY u.nome_completo";
 
 $matriculas_result = null;

@@ -2,6 +2,17 @@
 require_once 'restricao_acesso.php';
 $link = require_once '../conexão.php';
 
+$mensagem_sucesso = "";
+$mensagem_erro = "";
+
+if(isset($_GET['sucesso'])){
+    $mensagem_sucesso = "Disciplina removida da turma com sucesso!";
+}
+if(isset($_GET['erro'])){
+    $mensagem_erro = urldecode($_GET['erro']);
+}
+
+
 if (!isset($_GET['id']) || empty(trim($_GET['id']))) {
     header("location: gerenciar_turmas.php");
     exit();
@@ -73,6 +84,12 @@ if($stmt_associados = mysqli_prepare($link, $sql_associados)){
 <body>
     <div class="container mt-5">
         <h2>Gerenciar Disciplinas e Professores da Turma: <?php echo htmlspecialchars($nome_turma); ?></h2>
+        <?php if(!empty($mensagem_sucesso)): ?>
+            <div class="alert alert-success"><?php echo $mensagem_sucesso; ?></div>
+        <?php endif; ?>
+        <?php if(!empty($mensagem_erro)): ?>
+            <div class="alert alert-danger"><?php echo $mensagem_erro; ?></div>
+        <?php endif; ?>
         <?php if(!empty($erro_geral)): ?>
             <div class="alert alert-danger"><?php echo $erro_geral; ?></div>
         <?php endif; ?>

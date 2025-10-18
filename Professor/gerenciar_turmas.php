@@ -235,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['salvar_notas'])) {
                              FROM alunos a
                              JOIN usuarios u ON a.id_usuario = u.id_usuario
                              JOIN matriculas m ON a.id_aluno = m.id_aluno
-                             WHERE m.id_turma = ?";
+                             WHERE m.id_turma = ? AND m.situacao = 'ativa'";
             $stmt_alunos = $conexao->prepare($query_alunos);
             $stmt_alunos->bind_param("i", $id_turma_alunos);
             $stmt_alunos->execute();
