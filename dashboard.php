@@ -216,6 +216,7 @@ $nome = $_SESSION["nome_completo"];
                     echo '<div class="menu-grid">';
                     echo '<a href="Admin/gerenciar_alunos.php" class="menu-button btn-dark-blue"><i class="fa-solid fa-users"></i> Gerenciar Alunos</a>';
                     echo '<a href="Admin/gerenciar_professores.php" class="menu-button btn-purple"><i class="fa-solid fa-chalkboard-user"></i> Gerenciar Professores</a>';
+                    echo '<a href="Admin/gerenciar_cursos.php" class="menu-button btn-green"><i class="fa-solid fa-graduation-cap"></i> Gerenciar Cursos</a>';
                     echo '<a href="Admin/gerenciar_turmas.php" class="menu-button btn-orange"><i class="fa-solid fa-book-open"></i> Gerenciar Turmas e Disciplinas</a>';
                     echo '<a href="Admin/corrigir_notas.php" class="menu-button btn-red"><i class="fa-solid fa-marker"></i> Corrigir Notas/Faltas</a>';
                     echo '<a href="relatorios.php" class="menu-button btn-blue"><i class="fa-solid fa-chart-line"></i> Visualizar Relatórios</a>';
