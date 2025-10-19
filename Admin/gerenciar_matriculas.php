@@ -280,7 +280,7 @@ if ($stmt_mat = mysqli_prepare($link, $sql_alunos_matriculados)) {
 <body>
 
     <header class="main-header">
-        <div class="logo">Sistema Escolar</div>
+        <div class="logo">Área do admin</div>
         <nav class="main-nav">
             <a href="../dashboard.php"><i class="fa-solid fa-gauge"></i> Dashboard</a>
             <a href="gerenciar_turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
