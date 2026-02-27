@@ -219,13 +219,11 @@ $nome = $_SESSION["nome_completo"];
                     echo '<a href="Admin/gerenciar_cursos.php" class="menu-button btn-green"><i class="fa-solid fa-graduation-cap"></i> Gerenciar Cursos</a>';
                     echo '<a href="Admin/gerenciar_turmas.php" class="menu-button btn-orange"><i class="fa-solid fa-book-open"></i> Gerenciar Turmas e Disciplinas</a>';
                     echo '<a href="Admin/corrigir_notas.php" class="menu-button btn-red"><i class="fa-solid fa-marker"></i> Corrigir Notas/Faltas</a>';
-                    echo '<a href="relatorios.php" class="menu-button btn-blue"><i class="fa-solid fa-chart-line"></i> Visualizar Relatórios</a>';
                     echo '</div>';
                 } elseif (is_role('Professor')) {
                     echo '<h3>Funcionalidades de Professor:</h3>';
                     echo '<div class="menu-grid">';
                     echo '<a href="Professor/gerenciar_turmas.php" class="menu-button btn-green"><i class="fa-solid fa-school"></i> Visualizar Turmas e Lançar Notas</a>';
-                    echo '<a href="relatorios.php?nivel=professor" class="menu-button btn-blue"><i class="fa-solid fa-file-invoice"></i> Gerar Relatórios</a>';
                     echo '</div>';
                 } elseif (is_role('Aluno')) {
                     echo '<h3>Funcionalidades de Aluno:</h3>';
